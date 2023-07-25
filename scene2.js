@@ -10,11 +10,21 @@ function drawChart(selectedAirline) {
 
     // Check if the selected airline data exists
     if (selectedAirlineData) {
+      // Sort the data in descending order of incidents, fatal accidents, and fatalities
+      const sortedData = data
+        .slice()
+        .sort((a, b) => b.incidents_85_99 - a.incidents_85_99);
+
+      // Find the index of the selected airline in the sorted data
+      const selectedIndex = sortedData.findIndex(
+        (d) => d.airline === selectedAirline
+      );
+
       // Clear previous chart
       d3.select("#chart").selectAll("*").remove();
 
       // Set up the chart dimensions
-      const margin = { top: 40, right: 20, bottom: 100, left: 60 };
+      const margin = { top: 40, right: 200, bottom: 100, left: 60 };
       const width = 800 - margin.left - margin.right;
       const height = 400 - margin.top - margin.bottom;
 
@@ -30,17 +40,17 @@ function drawChart(selectedAirline) {
       const airlineData = [
         {
           label: "Incidents",
-          value: +selectedAirlineData.incidents_85_99, // Convert to a number using '+'
+          value: +selectedAirlineData.incidents_85_99,
           color: "#1f77b4",
         },
         {
           label: "Fatal Accidents",
-          value: +selectedAirlineData.fatal_accidents_85_99, // Convert to a number using '+'
+          value: +selectedAirlineData.fatal_accidents_85_99,
           color: "#ff7f0e",
         },
         {
           label: "Fatalities",
-          value: +selectedAirlineData.fatalities_85_99, // Convert to a number using '+'
+          value: +selectedAirlineData.fatalities_85_99,
           color: "#d62728",
         },
       ];
@@ -48,7 +58,7 @@ function drawChart(selectedAirline) {
       // Y scale
       const yScale = d3
         .scaleLinear()
-        .domain([0, d3.max(airlineData, (d) => d.value) + 100]) // Adjust the y-axis domain with some padding
+        .domain([0, d3.max(airlineData, (d) => d.value) + 100])
         .range([height, 0]);
 
       // X scale
@@ -85,6 +95,20 @@ function drawChart(selectedAirline) {
           const tooltip = d3.select("#tooltip");
           tooltip.style("visibility", "hidden");
         });
+
+      // Add ranking annotations
+      svg
+        .selectAll(".rank")
+        .data(airlineData)
+        .enter()
+        .append("text")
+        .attr("class", "rank")
+        .attr("x", (d) => xScale(d.label) + xScale.bandwidth() / 2)
+        .attr("y", (d) => yScale(d.value) - 25)
+        .attr("text-anchor", "middle")
+        .text((d, i) => `Rank ${selectedIndex + 1 - i}`)
+        .style("fill", "gray")
+        .style("font-size", "12px");
 
       // X axis
       svg
