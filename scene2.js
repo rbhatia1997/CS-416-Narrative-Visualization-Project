@@ -123,6 +123,9 @@ function handleDropdownChange() {
   const selectedAirline = d3.select("#airlineSelect").property("value");
   if (selectedAirline) {
     drawChart(selectedAirline);
+
+    // Update the highest data table for the selected airline
+    updateHighestData(window.data, 5);
   }
 }
 
@@ -132,12 +135,74 @@ function handleNextSceneClick() {
   window.location.href = "scene3.html";
 }
 
+// Function to update the highest data table
+function updateHighestData(data, numRecords) {
+  // Sort the data in descending order of incidents, fatal accidents, and fatalities
+  const sortedData = data
+    .slice()
+    .sort((a, b) => b.incidents_85_99 - a.incidents_85_99);
+
+  // Clear previous data in the table
+  d3.select("#highestData").selectAll("tr").remove();
+
+  // Add header row
+  const headerRow = d3.select("#highestData").append("tr");
+  headerRow
+    .append("th")
+    .text("Airline")
+    .attr("style", "border: 1px solid black; padding: 8px;")
+    .attr("align", "left");
+  headerRow
+    .append("th")
+    .text("Incidents")
+    .attr("style", "border: 1px solid black; padding: 8px;")
+    .attr("align", "left");
+  headerRow
+    .append("th")
+    .text("Fatal Accidents")
+    .attr("style", "border: 1px solid black; padding: 8px;")
+    .attr("align", "left");
+  headerRow
+    .append("th")
+    .text("Fatalities")
+    .attr("style", "border: 1px solid black; padding: 8px;")
+    .attr("align", "left");
+
+  // Add rows for top airlines
+  for (let i = 0; i < numRecords; i++) {
+    const row = d3.select("#highestData").append("tr");
+    row
+      .append("td")
+      .text(sortedData[i].airline)
+      .attr("style", "border: 1px solid black; padding: 8px;")
+      .attr("align", "left");
+    row
+      .append("td")
+      .text(sortedData[i].incidents_85_99)
+      .attr("style", "border: 1px solid black; padding: 8px;")
+      .attr("align", "left");
+    row
+      .append("td")
+      .text(sortedData[i].fatal_accidents_85_99)
+      .attr("style", "border: 1px solid black; padding: 8px;")
+      .attr("align", "left");
+    row
+      .append("td")
+      .text(sortedData[i].fatalities_85_99)
+      .attr("style", "border: 1px solid black; padding: 8px;")
+      .attr("align", "left");
+  }
+}
+
 // Event listeners
 d3.select("#airlineSelect").on("change", handleDropdownChange);
 d3.select("#nextSceneButton").on("click", handleNextSceneClick);
 
 // Load the data and populate the dropdown options
 d3.csv(dataURL).then((data) => {
+  // Save the data in a global variable for later use
+  window.data = data;
+
   const airlines = data.map((d) => d.airline);
   d3.select("#airlineSelect")
     .selectAll("option")
@@ -149,4 +214,7 @@ d3.csv(dataURL).then((data) => {
 
   // Initial call to draw the chart with the default selected airline
   drawChart(airlines[0]);
+
+  // Initial call to update the highest data table with the default selected airline
+  updateHighestData(data, 5);
 });
