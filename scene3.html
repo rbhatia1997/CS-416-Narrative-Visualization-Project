@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scene 3: Safety Records from 2000-2014</title>
+    <link rel="stylesheet" href="styles3.css" />
+  </head>
+  <body>
+    <h1>Scene 3: Safety Records from 2000-2014</h1>
+    <!-- Dropdown menu for airlines -->
+    <select id="airlineSelect">
+      <option value="" selected disabled>Select an airline</option>
+      <!-- Add options for each airline in the dataset -->
+      <!-- For example: <option value="Aer Lingus">Aer Lingus</option> -->
+    </select>
+    <!-- Bar chart for Scene 3 will be added here -->
+    <div class="chart-container">
+      <svg id="chart"></svg>
+    </div>
+    <!-- Highest Incidents, Fatal Accidents, and Fatalities table -->
+    <h2>Highest Incidents, Fatal Accidents, and Fatalities</h2>
+    <table id="highestData">
+      <tr>
+        <th>Airline</th>
+        <th>Incidents</th>
+        <th>Fatal Accidents</th>
+        <th>Fatalities</th>
+      </tr>
+    </table>
+    <br />
+    <button id="nextSceneButton">Next Scene</button>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="scene3.js"></script>
+  </body>
+</html>
