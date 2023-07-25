@@ -14,10 +14,9 @@ function drawChart(selectedAirline) {
       d3.select("#chart").selectAll("*").remove();
 
       // Set up the chart dimensions
-      // Set up the chart dimensions
-      const margin = { top: 60, right: 20, bottom: 100, left: 60 };
-      const width = 600 - margin.left - margin.right;
-      const height = 500 - margin.top - margin.bottom;
+      const margin = { top: 40, right: 20, bottom: 100, left: 60 };
+      const width = 800 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
 
       // Create the SVG container
       const svg = d3
@@ -31,20 +30,26 @@ function drawChart(selectedAirline) {
       const airlineData = [
         {
           label: "Incidents",
-          value: selectedAirlineData.incidents_85_99,
+          value: +selectedAirlineData.incidents_85_99, // Convert to a number using '+'
           color: "#1f77b4",
         },
         {
           label: "Fatal Accidents",
-          value: selectedAirlineData.fatal_accidents_85_99,
+          value: +selectedAirlineData.fatal_accidents_85_99, // Convert to a number using '+'
           color: "#ff7f0e",
         },
         {
           label: "Fatalities",
-          value: selectedAirlineData.fatalities_85_99,
+          value: +selectedAirlineData.fatalities_85_99, // Convert to a number using '+'
           color: "#d62728",
         },
       ];
+
+      // Y scale
+      const yScale = d3
+        .scaleLinear()
+        .domain([0, d3.max(airlineData, (d) => d.value) + 100]) // Adjust the y-axis domain with some padding
+        .range([height, 0]);
 
       // X scale
       const xScale = d3
@@ -53,16 +58,6 @@ function drawChart(selectedAirline) {
         .range([0, width])
         .paddingInner(0.2)
         .paddingOuter(0.2);
-
-      // Y scale
-      // Find the maximum value of fatalities among all airlines
-      const maxFatalities = d3.max(data, (d) => d.fatalities_85_99);
-
-      // Y scale
-      const yScale = d3
-        .scaleLinear()
-        .domain([0, maxFatalities * 1.2])
-        .range([height, 0]);
 
       // Draw the bars
       svg
