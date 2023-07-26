@@ -189,9 +189,22 @@ function drawScatterplot(data) {
     calculateRegressionCoefficients(fatalitiesData);
   const regressionCoefficientsIncidents =
     calculateRegressionCoefficients(incidentsData);
+  let showRegressionLines = false;
 
-  // Create a line generator for the regression line
-  const lineGenerator = d3
+  function drawRegressionLines() {
+    if (showRegressionLines) {
+      svgFatalities.select(".regression-line").style("display", "block");
+
+      svgIncidents.select(".regression-line").style("display", "block");
+    } else {
+      svgFatalities.select(".regression-line").style("display", "none");
+
+      svgIncidents.select(".regression-line").style("display", "none");
+    }
+  }
+
+  // Create a line generator for the regression lines
+  const lineGeneratorFatalities = d3
     .line()
     .x((d) => xScaleFatalities(d.x))
     .y((d) =>
@@ -201,23 +214,36 @@ function drawScatterplot(data) {
       )
     );
 
-  // Draw the regression line for fatalities
+  const lineGeneratorIncidents = d3
+    .line()
+    .x((d) => xScaleIncidents(d.x))
+    .y((d) =>
+      yScaleIncidents(
+        regressionCoefficientsIncidents.m * d.x +
+          regressionCoefficientsIncidents.b
+      )
+    );
+
+  // Draw the regression lines for fatalities and incidents (initially hidden)
   svgFatalities
     .append("path")
     .datum(fatalitiesData)
+    .attr("class", "regression-line")
     .attr("fill", "none")
     .attr("stroke", "red")
     .attr("stroke-width", 2)
-    .attr("d", lineGenerator);
+    .attr("d", lineGeneratorFatalities)
+    .style("display", "none");
 
-  // Draw the regression line for incidents
   svgIncidents
     .append("path")
     .datum(incidentsData)
+    .attr("class", "regression-line")
     .attr("fill", "none")
     .attr("stroke", "red")
     .attr("stroke-width", 2)
-    .attr("d", lineGenerator);
+    .attr("d", lineGeneratorIncidents)
+    .style("display", "none");
 
   // Add labels for outlier points
   const outliersFatalities = getOutliers(fatalitiesData);
@@ -248,6 +274,12 @@ function drawScatterplot(data) {
     .attr("fill", "black")
     .attr("font-size", "12px")
     .attr("alignment-baseline", "middle");
+
+  const toggleButton = document.getElementById("toggleButton");
+  toggleButton.addEventListener("click", function () {
+    showRegressionLines = !showRegressionLines;
+    drawRegressionLines();
+  });
 }
 function getOutliers(data) {
   // Calculate the first quartile (Q1) and third quartile (Q3)
