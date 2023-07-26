@@ -9,32 +9,6 @@ function drawChart(selectedAirline) {
 
     // Check if the selected airline data exists
     if (selectedAirlineData) {
-      // Sort the data in descending order of incidents, fatal accidents, and fatalities
-      const sortedData = data
-        .slice()
-        .sort((a, b) => b.incidents_85_99 - a.incidents_85_99);
-
-      // Find the index of the selected airline in the sorted data
-      const selectedIndex = sortedData.findIndex(
-        (d) => d.airline === selectedAirline
-      );
-
-      // Clear previous chart
-      d3.select("#chart").selectAll("*").remove();
-
-      // Set up the chart dimensions
-      const margin = { top: 40, right: 200, bottom: 100, left: 60 };
-      const width = 800 - margin.left - margin.right;
-      const height = 400 - margin.top - margin.bottom;
-
-      // Create the SVG container
-      const svg = d3
-        .select("#chart")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
       // Data for the selected airline
       const airlineData = [
         {
@@ -53,6 +27,46 @@ function drawChart(selectedAirline) {
           color: "#d62728",
         },
       ];
+
+      // Sort the data for each category in descending order
+      const sortedIncidentsData = data
+        .slice()
+        .sort((a, b) => b.incidents_85_99 - a.incidents_85_99);
+
+      const sortedFatalAccidentsData = data
+        .slice()
+        .sort((a, b) => b.fatal_accidents_85_99 - a.fatal_accidents_85_99);
+
+      const sortedFatalitiesData = data
+        .slice()
+        .sort((a, b) => b.fatalities_85_99 - a.fatalities_85_99);
+
+      // Find the rank of the selected airline for each category
+      const incidentsRank = sortedIncidentsData.findIndex(
+        (d) => d.airline === selectedAirline
+      );
+      const fatalAccidentsRank = sortedFatalAccidentsData.findIndex(
+        (d) => d.airline === selectedAirline
+      );
+      const fatalitiesRank = sortedFatalitiesData.findIndex(
+        (d) => d.airline === selectedAirline
+      );
+
+      // Clear previous chart
+      d3.select("#chart").selectAll("*").remove();
+
+      // Set up the chart dimensions
+      const margin = { top: 40, right: 200, bottom: 100, left: 60 };
+      const width = 800 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
+
+      // Create the SVG container
+      const svg = d3
+        .select("#chart")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
       // Y scale
       const yScale = d3
@@ -105,7 +119,12 @@ function drawChart(selectedAirline) {
         .attr("x", (d) => xScale(d.label) + xScale.bandwidth() / 2)
         .attr("y", (d) => yScale(d.value) - 25)
         .attr("text-anchor", "middle")
-        .text((d, i) => `Rank ${selectedIndex + 1 - i}`)
+        .text((d) => {
+          if (d.label === "Incidents") return `Rank ${incidentsRank + 1}`;
+          if (d.label === "Fatal Accidents")
+            return `Rank ${fatalAccidentsRank + 1}`;
+          if (d.label === "Fatalities") return `Rank ${fatalitiesRank + 1}`;
+        })
         .style("fill", "gray")
         .style("font-size", "12px");
 
