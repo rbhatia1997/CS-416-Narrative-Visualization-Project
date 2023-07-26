@@ -1,4 +1,3 @@
-// Data URL (replace 'path_to_your_data_file.csv' with the actual path)
 const dataURL = "airline-safety.csv";
 
 // Load the data and call the function to draw the scatterplots
@@ -185,60 +184,44 @@ function drawScatterplot(data) {
       tooltip.style("visibility", "hidden");
     });
 
-  // Add regression line for fatalities scatterplot
-  const regressionLineFatalities = ss.linearRegression(
-    fatalitiesData.map((d) => [d.x, d.y])
-  );
-  const regressionLineFuncFatalities = ss.linearRegressionLine(
-    regressionLineFatalities
-  );
-  svgFatalities
-    .append("line")
-    .attr("x1", xScaleFatalities(0))
-    .attr("y1", yScaleFatalities(regressionLineFuncFatalities(0)))
-    .attr("x2", xScaleFatalities(d3.max(fatalitiesData, (d) => d.x)))
-    .attr(
-      "y2",
+  // Calculate the regression coefficients (m and b)
+  const regressionCoefficientsFatalities =
+    calculateRegressionCoefficients(fatalitiesData);
+  const regressionCoefficientsIncidents =
+    calculateRegressionCoefficients(incidentsData);
+
+  // Create a line generator for the regression line
+  const lineGenerator = d3
+    .line()
+    .x((d) => xScaleFatalities(d.x))
+    .y((d) =>
       yScaleFatalities(
-        regressionLineFuncFatalities(d3.max(fatalitiesData, (d) => d.x))
+        regressionCoefficientsFatalities.m * d.x +
+          regressionCoefficientsFatalities.b
       )
-    )
-    .attr("stroke", "red")
-    .attr("stroke-width", 2);
+    );
 
-  // Add regression line for incidents scatterplot
-  const regressionLineIncidents = ss.linearRegression(
-    incidentsData.map((d) => [d.x, d.y])
-  );
-  const regressionLineFuncIncidents = ss.linearRegressionLine(
-    regressionLineIncidents
-  );
+  // Draw the regression line for fatalities
+  svgFatalities
+    .append("path")
+    .datum(fatalitiesData)
+    .attr("fill", "none")
+    .attr("stroke", "red")
+    .attr("stroke-width", 2)
+    .attr("d", lineGenerator);
+
+  // Draw the regression line for incidents
   svgIncidents
-    .append("line")
-    .attr("x1", xScaleIncidents(0))
-    .attr("y1", yScaleIncidents(regressionLineFuncIncidents(0)))
-    .attr("x2", xScaleIncidents(d3.max(incidentsData, (d) => d.x)))
-    .attr(
-      "y2",
-      yScaleIncidents(
-        regressionLineFuncIncidents(d3.max(incidentsData, (d) => d.x))
-      )
-    )
+    .append("path")
+    .datum(incidentsData)
+    .attr("fill", "none")
     .attr("stroke", "red")
-    .attr("stroke-width", 2);
+    .attr("stroke-width", 2)
+    .attr("d", lineGenerator);
 
-  // Add annotations for outlier points
-  const outliersFatalities = fatalitiesData.filter(
-    (d) =>
-      d.x > regressionLineFuncFatalities(d.y) + 5000 ||
-      d.x < regressionLineFuncFatalities(d.y) - 5000
-  );
-
-  const outliersIncidents = incidentsData.filter(
-    (d) =>
-      d.x > regressionLineFuncIncidents(d.y) + 5000 ||
-      d.x < regressionLineFuncIncidents(d.y) - 5000
-  );
+  // Add labels for outlier points
+  const outliersFatalities = getOutliers(fatalitiesData);
+  const outliersIncidents = getOutliers(incidentsData);
 
   svgFatalities
     .selectAll(".outlier-label")
@@ -265,4 +248,47 @@ function drawScatterplot(data) {
     .attr("fill", "black")
     .attr("font-size", "12px")
     .attr("alignment-baseline", "middle");
+}
+function getOutliers(data) {
+  // Calculate the first quartile (Q1) and third quartile (Q3)
+  const sortedData = data.slice().sort((a, b) => a.y - b.y);
+  const n = sortedData.length;
+  const q1Index = Math.floor(n * 0.25);
+  const q3Index = Math.floor(n * 0.75);
+  const q1 = sortedData[q1Index].y;
+  const q3 = sortedData[q3Index].y;
+
+  // Calculate the interquartile range (IQR)
+  const iqr = q3 - q1;
+
+  // Calculate the lower and upper bounds for outliers
+  const lowerBound = q1 - 1.5 * iqr;
+  const upperBound = q3 + 1.5 * iqr;
+
+  // Filter the data to get outliers
+  return data.filter((d) => d.y < lowerBound || d.y > upperBound);
+}
+
+function calculateRegressionCoefficients(data) {
+  // Calculate the means of x and y
+  const meanX = d3.mean(data, (d) => d.x);
+  const meanY = d3.mean(data, (d) => d.y);
+
+  // Calculate the differences between each x and the mean x, and each y and the mean y
+  const diffX = data.map((d) => d.x - meanX);
+  const diffY = data.map((d) => d.y - meanY);
+
+  // Calculate the sum of the product of differences
+  const sumDiffXY = d3.sum(diffX.map((d, i) => d * diffY[i]));
+
+  // Calculate the sum of the squared differences for x
+  const sumDiffXSquare = d3.sum(diffX.map((d) => d * d));
+
+  // Calculate the regression coefficient (m)
+  const m = sumDiffXY / sumDiffXSquare;
+
+  // Calculate the y-intercept (b)
+  const b = meanY - m * meanX;
+
+  return { m, b };
 }

@@ -1,4 +1,3 @@
-// Data URL (replace 'path_to_your_data_file.csv' with the actual path)
 const dataURL = "airline-safety.csv";
 
 // Function to draw the bar chart
