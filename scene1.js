@@ -4,7 +4,7 @@
 function createOverview() {
   const overviewContainer = d3.select(".overview");
 
-  const overviewText = `Welcome to the Airline Safety Narrative Visualization. This interactive web page aims to explore the safety records of different airlines based on incidents and accidents that occurred during two time periods: 1985-1999 and 2000-2014. It aims to answer if there is a <strong> correlation between airline and crash risk.</strong>`;
+  const overviewText = `Welcome to the Airline Safety Narrative Visualization. This interactive web page aims to explore the safety records of different airlines based on incidents and accidents that occurred during two time periods: 1985-1999 and 2000-2014. It aims to answer if there is a <strong> correlation between airline and crash / incident risk.</strong>`;
 
   const datasetVariables = [
     "airline: Airline name (asterisk indicates that regional subsidiaries are included)",

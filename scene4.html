@@ -13,12 +13,64 @@
 
     <div class="scatterplot-container">
       <h2>Fatalities (1985-1999 vs. 2000-2014)</h2>
+      <p>Hover over each data point to see specific numeric comparison.</p>
       <svg id="fatalitiesScatterplot" width="800" height="500"></svg>
-    </div>
 
+      <h2>Analysis</h2>
+      <p>
+        When we observe the data, we notice that the number of fatalities isn't
+        very consistent from the first half of the data to the next.
+      </p>
+      <p>
+        Avianca (Colombia National Airlines) had major crashes from 1983 to 1990
+        but no fatal accidents since 1990 or any incidents since 1999.
+      </p>
+      <p>
+        Kenya Airways had two major accidents since the 2000s, but prior to that
+        had no fatalities until 2000.
+      </p>
+      <p>
+        Taiwan's China Airlines have had issues in both time periods, but it and
+        one other airlines are the only ones that maintain that persistence and
+        are exceptions. <br />We notice that there
+        <b
+          >isn't a direct correlation in the rate of fatalities from one period
+          to the next</b
+        >, which is further shown via the regression line.
+      </p>
+    </div>
+    <hr />
     <div class="scatterplot-container">
       <h2>Incidents (1985-1999 vs. 2000-2014)</h2>
+      <p>Hover over each data point to see specific numeric comparison.</p>
       <svg id="incidentsScatterplot" width="800" height="500"></svg>
+      <h2>Analysis</h2>
+      <p>
+        Accidents that produce a massive number of fatalities are rare; fatal
+        accidents represent only 1/4 of all incidents in the database.
+      </p>
+      <p>
+        The thought here is that incidents show the potential hazard of flying a
+        certain airlines. Additionally, incidents can still reflect non-fatal
+        injuries.
+      </p>
+      <p>
+        In this data, Delta Airlines had a a persistently high rate of
+        incidents. Russia's Aeroflot had a very high rate of reported incidents
+        (related to hijackings during the breakup of the Soviet Union). In
+        recent years, the incident rate is closer to average. These airlines are
+        some notable outliers in the data.
+      </p>
+      <p>
+        From the data, there is a slight correlation between time periods for
+        incidents. We can see that some airlines are slightly safer to fly than
+        others.
+        <br />If anything, an
+        <b>
+          airline's rate of dangerous incidents is a better indicator of hazard
+          than fatalities.</b
+        >
+      </p>
     </div>
     <button onclick="window.location.href = 'index.html';">
       Go to Home Page
