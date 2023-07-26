@@ -156,7 +156,7 @@ function handleDropdownChange() {
 // Function to handle the next scene button click
 function handleNextSceneClick() {
   // Navigate to the next scene (replace 'scene3.html' with the next scene's HTML file)
-  window.location.href = "scene3.html";
+  window.location.href = "scene4.html";
 }
 
 // Function to update the highest data table
